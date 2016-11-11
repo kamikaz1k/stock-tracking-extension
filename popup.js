@@ -1,6 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright (c) 2016 Kaiser Dandangi. All rights reserved.
 
 function getQuotes (quotes, callback, errorCallback, status) {
   if (!quotes) quotes = ["TSLA","VOO","BOX","MSFT","BBRY","NVDA","CGC","F"];// ["YHOO","AAPL","GOOG","MSFT"];
@@ -31,12 +29,18 @@ function getQuotes (quotes, callback, errorCallback, status) {
   status("Running...");
 }
 
-function renderStatus(statusText) {
+function renderStatus (statusText) {
   document.getElementById('status').textContent = statusText;
   // chrome.extension.getBackgroundPage().console.log(statusText);
 }
 
-function renderQuotes(quotes) {
+function renderStockPicks (stockPicks, element) {
+  if (!element) element = document.getElementById("stock-picks");
+  if (!stockPicks) stockPicks = JSON.parse(localStorage.stockPicks);
+  element.textContent = "Your picks: " + stockPicks.join(", ")
+}
+
+function renderQuotes (quotes) {
   // alert("Rendering", JSON.strigify(quote));
   // document.getElementById('status').textContent = "RENDERED";
   document.getElementById('current').textContent = "Quotes: " + quotes.length;// quote.LastTradePriceOnly;
@@ -55,13 +59,39 @@ function renderQuotes(quotes) {
   doc.innerHTML = innerHTML;
 }
 
+function addStock () {
+  var stockPicks = localStorage.stockPicks, newEntry = document.getElementById("stock").value;
+  if (!stockPicks) {
+    localStorage.stockPicks = JSON.stringify([newEntry.toUpperCase()]);
+  } else {
+    stockPicks = JSON.parse(stockPicks);
+    newEntry = newEntry.toUpperCase();
+    // Check for duplicate entries
+    if (stockPicks.indexOf(newEntry) !== -1) {
+      return;
+    }
+
+    stockPicks.push(newEntry);
+    localStorage.stockPicks = JSON.stringify(stockPicks);
+  }
+  renderStatus("Add " + newEntry);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // setTimeout(function(){ renderStatus("DOMContentLoaded"); }, 500);
-  renderStatus("Calling Query");
-  getQuotes(null, renderQuotes, renderStatus, renderStatus);
-  // anotherOne();
+  renderStatus("Extension Ready");
 
-  document.getElementById("stock").addEventListener('change', function addNewStock () {
-    alert("new! " + document.getElementById("stock").value);
+  // Get stock picks from local storage
+  var stockPicks = ["TSLA","VOO","BOX","MSFT","BBRY","NVDA","CGC","F"];
+
+  renderStockPicks(stockPicks);
+  // getQuotes(stockPicks, renderQuotes, renderStatus, renderStatus);
+
+  // Setup Add Stock Listeners
+  document.getElementById("add-stock").addEventListener('click', function () {
+    // Adding click listener
+    addStock();
+    renderStockPicks();
+
   });
 });
