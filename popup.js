@@ -9,18 +9,21 @@ function getQuotes (quotes, callback, errorCallback, status) {
   
   var x = new XMLHttpRequest();
   x.open('GET', searchUrl);
-  // The Google image search API responds with JSON, so let Chrome parse it.
   x.responseType = 'json';
   x.onload = function() {
-    // Parse and process the response from Google Image Search.
     var response = x.response;
     if (!response || !response.query || !response.query.results || !response.query.results.quote) {
-      callback('No response from Yahoo Query search!');
+      errorCallback('No response from Yahoo Query search!');
       return;
     }
-    // var firstResult = response.responseData.results.quote[0];
     status("Success!");
-    callback(response.query.results.quote);
+    // console.log(response.query.results.quote);
+    // Special case in case of only searching for one stock
+    // quote is the response for that pick, rather than it being an array
+    response = response.query.results.quote;
+    if (!response.length) response = [response];
+
+    callback(response);
   };
   x.onerror = function() {
     errorCallback('Network error.');
@@ -82,16 +85,28 @@ document.addEventListener('DOMContentLoaded', function() {
   renderStatus("Extension Ready");
 
   // Get stock picks from local storage
-  var stockPicks = ["TSLA","VOO","BOX","MSFT","BBRY","NVDA","CGC","F"];
-
+  // Initialize if first run
+  var stockPicks = localStorage.stockPicks;
+  if (!stockPicks) {
+    localStorage.stockPicks = JSON.stringify([]);
+    stockPicks = [];
+  } else {
+    stockPicks = JSON.parse(stockPicks);
+  }
+  // console.log(stockPicks);
   renderStockPicks(stockPicks);
-  // getQuotes(stockPicks, renderQuotes, renderStatus, renderStatus);
+  getQuotes(stockPicks, renderQuotes, renderStatus, renderStatus);
 
-  // Setup Add Stock Listeners
+  // Setup Add Stock Listener
   document.getElementById("add-stock").addEventListener('click', function () {
     // Adding click listener
     addStock();
     renderStockPicks();
 
+  });
+  // Setup Clear Stock Listener
+  document.getElementById("clear-stocks").addEventListener('click', function () {
+    localStorage.stockPicks = JSON.stringify([]);
+    renderStockPicks();
   });
 });
