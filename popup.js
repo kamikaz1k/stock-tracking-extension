@@ -45,8 +45,7 @@ function renderStockPicks (stockPicks, element) {
 
 function renderQuotes (quotes) {
   // alert("Rendering", JSON.strigify(quote));
-  // document.getElementById('status').textContent = "RENDERED";
-  document.getElementById('current').textContent = "Quotes: " + quotes.length;// quote.LastTradePriceOnly;
+  // document.getElementById('status').textContent = "RENDERED"; // quote.LastTradePriceOnly;
   // document.getElementById('current').innerHTML = "RENDERED!";// quote.LastTradePriceOnly;
   var doc = document.createDocumentFragment();
   doc = document.getElementById("quotes");
@@ -120,11 +119,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adding click listener
     addStock();
     renderStockPicks();
-
   });
   // Setup Clear Stock Listener
   document.getElementById("clear-stocks").addEventListener('click', function () {
     localStorage.stockPicks = JSON.stringify([]);
     renderStockPicks();
+  });
+  // Setup Clear Stock Listener
+  document.getElementById("refresh-stocks").addEventListener('click', function () {
+    var stockPicks = JSON.parse(localStorage.stockPicks);
+    getQuotes(stockPicks, renderQuotes, renderStatus, renderStatus);
   });
 });
