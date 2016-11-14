@@ -50,16 +50,34 @@ function renderQuotes (quotes) {
   // document.getElementById('current').innerHTML = "RENDERED!";// quote.LastTradePriceOnly;
   var doc = document.createDocumentFragment();
   doc = document.getElementById("quotes");
-  var innerHTML = "<table><tr><th>Symbol</th><th>Last Trade</th><th>% Change</th></tr>";
+  var innerHTML = "<table><tr><th>Symbol</th><th>Last Trade</th><th>% Change</th><th>Remove</th></tr>";
   quotes.forEach(function (quote) {
     innerHTML += '<tr>' + 
                   '<td>' + quote.symbol + '</td>' + //'Symbol: 
                   '<td>' + quote.LastTradePriceOnly + '</td>' + //'Price: 
                   '<td>' + quote.ChangeinPercent + '</td>' +
+                  '<td class="remove-stock" symbol="' + quote.symbol + '"><button>Remove ' + quote.symbol + '</button></td>' +
                   '</tr>';
   });
   innerHTML += "</table>";
   doc.innerHTML = innerHTML;
+  // Setup remove listeners
+  document.querySelectorAll(".remove-stock").forEach(function (element) {
+    element.addEventListener('click', function () {
+      removeStockPick(element.getAttribute("symbol"));
+      element.parentNode.parentNode.removeChild(element.parentNode);
+    });
+  });
+}
+
+function removeStockPick (quote) {
+  console.log("remove", quote);
+  var stockPicks = JSON.parse(localStorage.stockPicks);
+  if (stockPicks.includes(quote)) {
+    stockPicks.splice(stockPicks.indexOf(quote), 1);
+    localStorage.stockPicks = JSON.stringify(stockPicks);
+  }
+  renderStockPicks();
 }
 
 function addStock () {
