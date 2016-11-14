@@ -1,19 +1,17 @@
 {
   "manifest_version": 2,
 
-  "name": "Getting started example",
-  "description": "This extension shows a Google Image search result for the current page",
+  "name": "(Simple) Stock Tracker",
+  "description": "This extension shows the stock prices for all the selected stocks",
   "version": "1.0",
 
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html",
-    "default_title": "Click here!"
+    "default_title": "Show Me The Money!"
   },
   "permissions": [
     "activeTab",
-    "https://ajax.googleapis.com/",
-    "https://query.yahooapis.com/",
-    "https://httpbin.org/"
+    "https://query.yahooapis.com/"
   ]
 }
