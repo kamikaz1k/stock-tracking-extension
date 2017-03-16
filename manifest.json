@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
 
   "name": "(Simple) Stock Tracker",
   "description": "This extension shows the stock prices for all the selected stocks",
@@ -12,6 +12,6 @@
   },
   "permissions": [
     "activeTab",
-    "https://query.yahooapis.com/"
+    "https://finance.google.com/"
   ]
 }
