@@ -14,28 +14,54 @@
         width:780px;
         height:580px
       }
+      #status-block {
+        display: block;
+        margin-top: 5px;
+      }
       #status {
         /* avoid an excessively wide status text */
         white-space: pre;
         text-overflow: ellipsis;
         overflow: hidden;
         max-width: 400px;
+        margin-right: 5px;
+        display: inline-block;
+      }
+      .spinner {
+        display:inline-block;
+        border: 2px solid #FF6D00;
+        border-bottom: 2px solid rgba(255, 154, 26, 0.7);
+        height: 15px;
+        width: 15px;
+        border-radius: 50%;
+        animation:load8 1.1s infinite linear;
+      }
+
+      @keyframes load8 {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
       }
     </style>
 
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
     <script src="popup.js"></script>
   </head>
   <body>
     <label for="stock">
-      <input id="stock"><button id="add-stock">ADD</button><button id="clear-stocks">CLEAR</button><button id="refresh-stocks">REFRESH</button>
+      <input id="stock">
+      <button id="add-stock">ADD</button>
+      <button id="clear-stocks">CLEAR</button>
+      <button id="refresh-stocks">REFRESH</button>
     </label>
-    <div id="status">Checking...</div>
+    <span id="status-block">
+      <div id="status">Loading...</div>
+      <div class="spinner"></div>
+    </span>
     <div id="stock-picks"></div>
     <div id="quotes"></div>
   </body>

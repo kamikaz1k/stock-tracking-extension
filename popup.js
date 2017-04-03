@@ -17,11 +17,16 @@ function getQuotes (quotes, callback, errorCallback, status) {
     errorCallback('Network error.');
   };
   x.send();
-  status("Running...");
+  status("Loading...");
 }
 
 function renderStatus (statusText) {
   document.getElementById('status').textContent = statusText;
+  if (statusText == "Loading...") {
+    document.querySelector("#status-block .spinner").style.display = "";
+  } else {
+    document.querySelector("#status-block .spinner").style.display = "none";
+  }
 }
 
 function renderStockPicks (stockPicks, element) {
