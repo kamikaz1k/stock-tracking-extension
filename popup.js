@@ -34,8 +34,10 @@ function normalizeQuotes (quotes) {
   return quotes.map((quote) => {
     return {
       symbol: quote.t,
+      exchange: quote.e,
       LastTradePriceOnly: quote.l,
-      ChangeinPercent: quote.c
+      ChangeinPercent: quote.c,
+      localizedPrice: quote.l_cur.indexOf("$") > -1 ? quote.l_cur : "US$" + quote.l_cur
     };
   });
 }
@@ -51,8 +53,8 @@ function renderQuotes (quotes) {
   var innerHTML = "<table><tr><th>Symbol</th><th>Last Trade</th><th>% Change</th><th>Remove</th></tr>";
   quotes.forEach(function (quote) {
     innerHTML += '<tr>' + 
-                  '<td>' + quote.symbol + '</td>' + //'Symbol: 
-                  '<td>' + quote.LastTradePriceOnly + '</td>' + //'Price: 
+                  `<td><a href="https://www.google.ca/finance?q=${quote.exchange}%3A${quote.symbol}" target="_blank">${quote.symbol}</a></td>` + //'Symbol: 
+                  '<td>' + quote.localizedPrice + '</td>' + //'Price: 
                   '<td>' + quote.ChangeinPercent + '</td>' +
                   '<td class="remove-stock" symbol="' + quote.symbol + '"><button>Remove ' + quote.symbol + '</button></td>' +
                   '</tr>';
