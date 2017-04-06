@@ -11,7 +11,7 @@
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
-        width:780px;
+        width:380px;
         height:580px
       }
       #status-block {
@@ -46,6 +46,21 @@
           -webkit-transform: rotate(360deg);
           transform: rotate(360deg);
         }
+      }
+
+      #stock-picks {
+        margin: 10px 0px;
+      }
+      tr:nth-child(even) {
+        background: rgba(0,0,0,0.05);
+      }
+
+      tr > td:nth-child(3) {
+        text-align: right;
+      }
+
+      tr > td:nth-child(4) {
+        text-align: right;
       }
     </style>
 
