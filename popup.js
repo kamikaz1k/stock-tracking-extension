@@ -41,7 +41,7 @@ function normalizeQuotes (quotes) {
       symbol: quote.t,
       exchange: quote.e,
       LastTradePriceOnly: quote.l,
-      ChangeinPercent: quote.c,
+      ChangeinPercent: quote.cp[0] === "-" ? quote.cp : "+" + quote.cp,
       localizedPrice: quote.l_cur.indexOf("$") > -1 ? quote.l_cur : "US$" + quote.l_cur
     };
   });
