@@ -57,10 +57,25 @@ function renderQuotes (quotes) {
   doc = document.getElementById("quotes");
   var innerHTML = "<table><tr><th>Symbol</th><th>Last Trade</th><th>% Change</th><th>Remove</th></tr>";
   quotes.forEach(function (quote) {
+    let delta = Number(quote.ChangeinPercent);
+    let styleClass;
+    
+    if (delta > 10) {
+      styleClass = "big-positive";
+    } else if (delta > 0) {
+      styleClass = "positive";
+    } else if (delta < -10) {
+      styleClass = "big-negative";
+    } else if (delta > 0) {
+      styleClass = "negative";
+    } else {
+      styleClass = "neutral";
+    }
+
     innerHTML += '<tr>' + 
                   `<td><a href="https://www.google.ca/finance?q=${quote.exchange}%3A${quote.symbol}" target="_blank">${quote.symbol}</a></td>` + //'Symbol: 
                   '<td>' + quote.localizedPrice + '</td>' + //'Price: 
-                  '<td>' + quote.ChangeinPercent + '</td>' +
+                  `<td class="${styleClass}">${quote.ChangeinPercent}</td>` +
                   '<td class="remove-stock" symbol="' + quote.symbol + '"><button>Remove ' + quote.symbol + '</button></td>' +
                   '</tr>';
   });
