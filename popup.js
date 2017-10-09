@@ -66,7 +66,7 @@ function renderQuotes (quotes) {
       styleClass = "positive";
     } else if (delta < -10) {
       styleClass = "big-negative";
-    } else if (delta > 0) {
+    } else if (delta < 0) {
       styleClass = "negative";
     } else {
       styleClass = "neutral";
