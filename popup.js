@@ -1,17 +1,18 @@
 // Copyright (c) 2016 Kaiser Dandangi. All rights reserved.
 function getQuotes (quotes, callback, errorCallback, status) {
   if (!quotes) quotes = ["TSLA","VOO","BOX","MSFT","BBRY","NVDA","CGC","F"];// ["YHOO","AAPL","GOOG","MSFT"];
-  
-  var searchUrl = "https://finance.google.com/finance/info?client=ig&q="
+
+  // var searchUrl = "https://finance.google.com/finance/info?client=ig&q="
+  var searchUrl = "https://api.robinhood.com/quotes/?symbols=";
   searchUrl += encodeURIComponent(quotes.join(","));
-  
+
   var x = new XMLHttpRequest();
   x.open('GET', searchUrl);
   x.onload = function() {
     var response = x.response;
-    
+
     status("Success!");
-    callback(JSON.parse(response.slice(4)));
+    callback(JSON.parse(response).results);
   };
   x.onerror = function() {
     errorCallback('Network error.');
@@ -35,7 +36,8 @@ function renderStockPicks (stockPicks, element) {
   element.textContent = "Your picks: " + stockPicks.join(", ")
 }
 
-function normalizeQuotes (quotes) {
+// Google Finance Normalizer
+function normalizeQuotesGoogle (quotes) {
   return quotes.map((quote) => {
     return {
       symbol: quote.t,
@@ -45,6 +47,25 @@ function normalizeQuotes (quotes) {
       localizedPrice: quote.l_cur.indexOf("$") > -1 ? quote.l_cur : "US$" + quote.l_cur
     };
   });
+}
+
+// Robinhood Normalizer
+function normalizeQuotes (quotes) {
+  var stockPicks = JSON.parse(localStorage.stockPicks)
+  return quotes.map((quote, i) => {
+    if (!quote) quote = { symbol: stockPicks[i] };
+    return {
+      symbol: quote.symbol,
+      exchange: "",
+      LastTradePriceOnly: quote.last_trade_price || "",
+      ChangeinPercent: calcChangeinPercent(parseInt(quote.previous_close), parseInt(quote.last_trade_price)) || "",
+      localizedPrice: "US$" + (quote.last_trade_price || "0.000")
+    };
+  });
+
+  function calcChangeinPercent(curr, prev) {
+    return (curr - prev) * 100/prev;
+  }
 }
 
 function renderQuotes (quotes) {
@@ -57,9 +78,9 @@ function renderQuotes (quotes) {
   doc = document.getElementById("quotes");
   var innerHTML = "<table><tr><th>Symbol</th><th>Last Trade</th><th>% Change</th><th>Remove</th></tr>";
   quotes.forEach(function (quote) {
-    let delta = Number(quote.ChangeinPercent);
+    let delta = Number(quote.ChangeinPercent).toFixed(3);
     let styleClass;
-    
+
     if (delta > 10) {
       styleClass = "big-positive";
     } else if (delta > 0) {
@@ -72,10 +93,10 @@ function renderQuotes (quotes) {
       styleClass = "neutral";
     }
 
-    innerHTML += '<tr>' + 
-                  `<td><a href="https://www.google.ca/finance?q=${quote.exchange}%3A${quote.symbol}" target="_blank">${quote.symbol}</a></td>` + //'Symbol: 
-                  '<td>' + quote.localizedPrice + '</td>' + //'Price: 
-                  `<td class="${styleClass}">${quote.ChangeinPercent}</td>` +
+    innerHTML += '<tr>' +
+                  `<td><a href="https://www.google.ca/finance?q=${quote.exchange}%3A${quote.symbol}" target="_blank">${quote.symbol}</a></td>` + //'Symbol:
+                  '<td>' + quote.localizedPrice + '</td>' + //'Price:
+                  `<td class="${styleClass}">${delta}</td>` +
                   '<td class="remove-stock" symbol="' + quote.symbol + '"><button>Remove ' + quote.symbol + '</button></td>' +
                   '</tr>';
   });
