@@ -3,7 +3,7 @@
 
   "name": "(Simple) Stock Tracker",
   "description": "This extension shows the stock prices for all the selected stocks",
-  "version": "2.0",
+  "version": "2.1",
 
   "browser_action": {
     "default_icon": "icon.png",
