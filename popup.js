@@ -58,7 +58,7 @@ function normalizeQuotes (quotes) {
       symbol: quote.symbol,
       exchange: "",
       LastTradePriceOnly: quote.last_trade_price || "",
-      ChangeinPercent: calcChangeinPercent(parseInt(quote.previous_close), parseInt(quote.last_trade_price)) || "",
+      ChangeinPercent: calcChangeinPercent(parseInt(quote.last_trade_price, parseInt(quote.previous_close))) || "",
       localizedPrice: "US$" + (quote.last_trade_price || "0.000")
     };
   });
