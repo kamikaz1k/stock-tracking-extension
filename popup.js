@@ -52,13 +52,17 @@ function normalizeQuotesGoogle (quotes) {
 // Robinhood Normalizer
 function normalizeQuotes (quotes) {
   var stockPicks = JSON.parse(localStorage.stockPicks)
+
   return quotes.map((quote, i) => {
     if (!quote) quote = { symbol: stockPicks[i] };
     return {
       symbol: quote.symbol,
       exchange: "",
       LastTradePriceOnly: quote.last_trade_price || "",
-      ChangeinPercent: calcChangeinPercent(parseInt(quote.last_trade_price, parseInt(quote.previous_close))) || "",
+      ChangeinPercent: calcChangeinPercent(
+        parseFloat(quote.last_trade_price),
+        parseFloat(quote.previous_close)
+      ) || "",
       localizedPrice: "US$" + (quote.last_trade_price || "0.000")
     };
   });
