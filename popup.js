@@ -1,8 +1,7 @@
 // Copyright (c) 2016 Kaiser Dandangi. All rights reserved.
 function getQuotes (quotes, callback, errorCallback, status) {
-  if (!quotes) quotes = ["TSLA","VOO","BOX","MSFT","BBRY","NVDA","CGC","F"];// ["YHOO","AAPL","GOOG","MSFT"];
+  if (!quotes) quotes = ["TSLA","VOO","BOX","MSFT","BBRY","NVDA","CGC","F"];
 
-  // var searchUrl = "https://finance.google.com/finance/info?client=ig&q="
   var searchUrl = "https://api.robinhood.com/quotes/?symbols=";
   searchUrl += encodeURIComponent(quotes.join(","));
 
@@ -11,11 +10,12 @@ function getQuotes (quotes, callback, errorCallback, status) {
   x.onload = function() {
     var response = x.response;
 
-    status("Success!");
+    status("Quotes retrieved!");
     callback(JSON.parse(response).results);
   };
-  x.onerror = function() {
-    errorCallback('Network error.');
+  x.onerror = function(e) {
+    status("Request unsuccessful...");
+    errorCallback(e);
   };
   x.send();
   status("Loading...");
@@ -75,15 +75,13 @@ function normalizeQuotes (quotes) {
 function renderQuotes (quotes) {
   // Normalize the google finance response to be the same as yql
   quotes = normalizeQuotes(quotes);
-  // alert("Rendering", JSON.strigify(quote));
-  // document.getElementById('status').textContent = "RENDERED"; // quote.LastTradePriceOnly;
-  // document.getElementById('current').innerHTML = "RENDERED!";// quote.LastTradePriceOnly;
-  var doc = document.createDocumentFragment();
-  doc = document.getElementById("quotes");
+
+  var doc = document.getElementById("quotes");
   var innerHTML = "<table><tr><th>Symbol</th><th>Last Trade</th><th>% Change</th><th>Remove</th></tr>";
   quotes.forEach(function (quote) {
-    let delta = Number(quote.ChangeinPercent).toFixed(3);
-    let styleClass;
+
+    var delta = Number(quote.ChangeinPercent).toFixed(3);
+    var styleClass = "neutral";
 
     if (delta > 10) {
       styleClass = "big-positive";
@@ -97,15 +95,17 @@ function renderQuotes (quotes) {
       styleClass = "neutral";
     }
 
-    innerHTML += '<tr>' +
-                  `<td><a href="https://www.google.ca/finance?q=${quote.exchange}%3A${quote.symbol}" target="_blank">${quote.symbol}</a></td>` + //'Symbol:
-                  '<td>' + quote.localizedPrice + '</td>' + //'Price:
-                  `<td class="${styleClass}">${delta}</td>` +
-                  '<td class="remove-stock" symbol="' + quote.symbol + '"><button>Remove ' + quote.symbol + '</button></td>' +
-                  '</tr>';
+    innerHTML += `<tr>
+                    <td><a href="https://www.google.ca/finance?q=${quote.exchange}%3A${quote.symbol}" target="_blank">${quote.symbol}</a></td>
+                    <td>${quote.localizedPrice}</td>
+                    <td class="${styleClass}">${delta}</td>
+                    <td class="remove-stock" symbol="${quote.symbol}"><button>Remove ${quote.symbol}</button></td>
+                  </tr>`;
   });
+
   innerHTML += "</table>";
   doc.innerHTML = innerHTML;
+
   // Setup remove listeners
   document.querySelectorAll(".remove-stock").forEach(function (element) {
     element.addEventListener('click', function () {
@@ -142,8 +142,12 @@ function addStock () {
   renderStatus("Add " + newEntry);
 }
 
+function dumpError (e) {
+  console.log(e);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  // setTimeout(function(){ renderStatus("DOMContentLoaded"); }, 500);
+
   renderStatus("Extension Ready");
 
   // Get stock picks from local storage
@@ -156,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
     stockPicks = JSON.parse(stockPicks);
   }
   renderStockPicks(stockPicks);
-  getQuotes(stockPicks, renderQuotes, renderStatus, renderStatus);
+  getQuotes(stockPicks, renderQuotes, dumpError, renderStatus);
 
   // Setup Add Stock Listener
   document.getElementById("add-stock").addEventListener('click', function () {
@@ -172,6 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Setup Clear Stock Listener
   document.getElementById("refresh-stocks").addEventListener('click', function () {
     var stockPicks = JSON.parse(localStorage.stockPicks);
-    getQuotes(stockPicks, renderQuotes, renderStatus, renderStatus);
+    getQuotes(stockPicks, renderQuotes, dumpError, renderStatus);
   });
 });
